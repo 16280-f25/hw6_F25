@@ -21,8 +21,8 @@ import tf2_ros
 # ************************************************
 """
 This starter code provides code base to implement particle filter based localization,
- also known as MonteCarlo Localization (MCL) and is part of HW5b Q2
-Parts of this assignment depends on HW5a solutions
+ also known as MonteCarlo Localization (MCL)
+Parts of this assignment depends on your HW5 solutions
 
 --- TBD --- indicates the section to fill out. There are 9 TBD sections to fill out
 
@@ -142,17 +142,17 @@ class ParticleFilterNode(Node):
             history=...,
             depth=10
         )
-        # ------------ TBD - END -------------------
+        
+        # Create four subsribers, subscribing to 
+        # 1) /map, 2) /odom, 3) /scan, 4) /initialpose, 
+        # with the appropriate QoS and callbacks for each
+        ...
 
-        self.create_subscription(OccupancyGrid, '/map', self.map_callback, map_qos)
-        self.create_subscription(Odometry, '/odom', self.odom_callback, odom_qos)
-        self.create_subscription(LaserScan, '/scan', self.scan_callback, sensor_qos)
-        self.create_subscription(PoseWithCovarianceStamped, '/initialpose', self.initialpose_callback, 10)
-
-        self.particle_pub = self.create_publisher(PoseArray, '/particle_cloud', 10)
+        # Create a PoseArray publisher on the particle_cloud topic
+        self.particle_pub = ...
         self.create_timer(0.05, self.publish_tf)
         self.create_timer(1.0, self.anchor_manager.check_and_anchor)
-
+        # ------------ TBD - END -------------------
     def map_callback(self, msg: OccupancyGrid):
         """
         subscribes to occupancy grid map
@@ -192,6 +192,9 @@ class ParticleFilterNode(Node):
         provide location to your map file. it directly reads from the source.
         the map server doesn't load image data
         """
+
+        # Experiment with this path, as the absolute path might be the easiest to do from your root directory or may have to 
+        # use the relative path from the current directory you are running the node from or the file itself
         map_image = Image.open('.../.../.../map.pgm').convert('L')
         map_data = map_image.load()
 
@@ -236,30 +239,15 @@ class ParticleFilterNode(Node):
             self.last_odom = msg
             return
         #---------------------- TBD ----------------------------
-        # extract x1, y1, theta 1 from the last odom message
-
-        x1, y1 = ...
-        theta1 = ...
-
-        # extract x2, y2, theta 2 from the recent odom message
-        x2, y2 = ...
-        theta2 = ...
-
-        # Using homogeneous transformation matrices for relative motion
-        T_prev = np.array([
-            ...
-        ])
-        T_curr = np.array([
-            ...
-        ])
-
-        # T_rel = inv(T_prev) @ T_curr
-        T_rel = ...
-
-        # compute dx, dy, dtheta, and pass it on to self.motion_update() to get the priors
-        dx = T_rel[...]
-        dy = T_rel[...]
-        dtheta = math.atan2(...)
+        '''
+        Extract x1, y1, th1, x2, y2, th2 from the last and recent odom message respectively
+        Make the SE(2) homogenous matrices representing their movement
+        Compute the relative motion model from above
+        Extract dx, dy from T_rel
+        dtheta = math.atan2(sin, cos) from T_rel
+        '''
+        
+        ...
 
         # ---------------------- TBD ----------------------------
 
@@ -292,8 +280,8 @@ class ParticleFilterNode(Node):
             T_delta = np.array([
                 ...
             ])
+         
             # T_new = T @ T_delta
-
             T_new = ...
 
             p.x = T_new[...]
@@ -472,7 +460,7 @@ class ParticleFilterNode(Node):
         """
         Transform odom to map
 
-        In HW5a, we used a static tf to publish 0,0,0,0,0,0 (x,y,x, roll, pitch,yaw) angle between /odom and /map
+        In HW5, we used a static tf to publish 0,0,0,0,0,0 (x,y,x, roll, pitch,yaw) angle between /odom and /map
         This was necessary because while building the map, we didn't have a tf between map and odom and all maps are
         published to map frame.
 

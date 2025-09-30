@@ -24,7 +24,7 @@ This starter code provides code base to implement particle filter based localiza
  also known as MonteCarlo Localization (MCL)
 Parts of this assignment depends on your HW5 solutions
 
---- TBD --- indicates the section to fill out. There are 9 TBD sections to fill out
+--- TBD --- and ... indicates the section to fill out. There are 9 TBD sections to fill out
 
 ... indicates the specific place to type the code
 
@@ -270,7 +270,7 @@ class ParticleFilterNode(Node):
         # ---------------------- TBD -----------------------
         dx, dy, dtheta = u
         for p in self.particles:
-            ndx = dx + random.gauss(0, 0.01)  # add random noise
+            ndx = dx + random.gauss(0, 0.01)  # add random noise (unit is meters)
             ndy = ...
             ndtheta = ...
 
@@ -335,23 +335,23 @@ class ParticleFilterNode(Node):
         - sigma defines how sharp the sensor model is. default is 0.1 adjust between 0.1 and 0.5
         """
         w = 1.0
-        angle = scan_msg.angle_min # this is the no. of lidar beams. in total around 220. Set tit between
-                                   # 1 and 10. 1 = consider all beams
+        angle = scan_msg.angle_min # this is the no. of lidar beams. in total around 220. Set it between range
+                                   # 1 and 10. 1 = consider all beams. more beams = more compute time
         #------------------------ TBD --------------------------
         for r in scan_msg.ranges[::1]:
             if scan_msg.range_min < r < scan_msg.range_max:
-                x = ...
-                y = ...
+                x = ... # r is the distance reported by each scan, so we want to extract the x and y components using the angle
+                y = ... # note that we need to use the particle's x and y position to transform this to world coordinates
                 mx = int() # it is in pixel unit so divide by resolution and should be int type
-                my = int()
+                my = int() # similar as above
                 # check if it falls within the map or not
                 if 0 <= mx < self.distance_map.shape[1] and 0 <= my < self.distance_map.shape[0]:
                     d = ...
-                    likelihood = ....
+                    likelihood = ...
                 else:
                     # if not some other value. try values between 0.5 and 1
                     likelihood = ...# similar expression to 2.d but d is fixed to a number
-                w *= max(likelihood, ...)  # just so that the weights are not too small and collapse
+                w *= max(likelihood, ...)  # a small value here... just so that the weights are not too small and collapse
             angle += scan_msg.angle_increment
         # ------------------------ TBD-END --------------------------
         return w
@@ -404,7 +404,7 @@ class ParticleFilterNode(Node):
                 i += 1
             else:
                 j += 1
-        self.particles = [...] # new particles
+        self.particles = [...] # new particles, we are assuming vectorized code here, you can break this into multiple lines
 
 
         #------------------------- TBD-END ------------------------------
@@ -484,7 +484,7 @@ class ParticleFilterNode(Node):
                                [..., ..., ...],   # y or oy?
                                [0, 0, 1]])
         T_odom_base = np.array([[..., ..., ...], # x or ox?
-                                [..., ...., ...],  # y or oy?
+                                [..., ..., ...],  # y or oy?
                                 [0, 0, 1]])
         # T_map_odom =T_map_base @ T_base_odom or T_map_odom =T_map_base @ inverse(T_odom_base)
         self.T_map_odom = ...
@@ -503,7 +503,7 @@ class ParticleFilterNode(Node):
         # adding random noise to the given pose
         # ------------------ TBD --------------------
         self.particles = [Particle(random.gauss(x, ...),  # try same value on all (0.1 to 0.3)
-                                   random.gauss(y, ...),
+                                   random.gauss(y, ...),  # same here
                                    random.gauss(theta, ...),
                                    1.0 / self.num_particles)
                           for _ in range(self.num_particles)]
